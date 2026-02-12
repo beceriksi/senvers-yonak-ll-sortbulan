@@ -1,0 +1,40 @@
+name: Crypto Signal Bot
+
+on:
+  schedule:
+    - cron: '0 */2 * * *' # Her 2 saatte bir otomatik çalışır
+  workflow_dispatch: # Manuel çalıştırma butonu ekler
+
+permissions:
+  contents: write # Hafızayı geri yazabilmesi için ŞART
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Bot
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python bot.py
+
+      - name: Commit and Push History (Hafızayı Kaydet)
+        run: |
+          git config --global user.name 'GitHub Action Bot'
+          git config --global user.email 'action@github.com'
+          git add signal_history.json
+          git commit -m "Update signal history [skip ci]" || echo "No changes to commit"
+          git push
