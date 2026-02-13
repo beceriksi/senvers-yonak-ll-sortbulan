@@ -17,8 +17,10 @@ HISTORY_FILE = "signal_history.json"
 
 def send_telegram(msg):
     if TOKEN and CHAT_ID:
+        # Mesajın başına SHORT BOTU ibaresi eklendi
+        full_msg = f"📉 *[SHORT BOTU]*\n{msg}"
         url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-        requests.post(url, json={"chat_id": CHAT_ID, "text": msg, "parse_mode": "Markdown"})
+        requests.post(url, json={"chat_id": CHAT_ID, "text": full_msg, "parse_mode": "Markdown"})
 
 def get_data(endpoint, params={}):
     base = "https://www.okx.com"
